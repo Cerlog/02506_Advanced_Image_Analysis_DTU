@@ -1,0 +1,42 @@
+2025-01-29T10:13:33.115689+0100 INFO Original image values: [  0 128 255]
+2025-01-29T10:13:33.119703+0100 INFO Unique values: [  0 128 255]
+2025-01-29T10:13:33.120701+0100 INFO Mapping 0 to 0
+2025-01-29T10:13:33.120701+0100 INFO Mapping 128 to 1
+2025-01-29T10:13:33.120701+0100 INFO Mapping 255 to 2
+2025-01-29T10:13:33.125662+0100 INFO After mapping, values: [0 1 2]
+2025-01-29T10:13:33.127703+0100 INFO Row differences: (array([0, 1, 2], dtype=int32), array([239561,   2913,   1068]))
+2025-01-29T10:13:33.129753+0100 INFO Column differences: (array([0, 1, 2], dtype=int32), array([239439,   2963,   1140]))
+2025-01-29T10:13:33.130755+0100 INFO Count of row differences: 3981
+2025-01-29T10:13:33.130755+0100 INFO Count of column differences: 4103
+2025-01-29T10:13:46.418137+0100 INFO Original image values: [  0 128 255]
+2025-01-29T10:13:46.425124+0100 INFO Unique values: [  0 128 255]
+2025-01-29T10:13:46.425124+0100 INFO Mapping 0 to 0
+2025-01-29T10:13:46.425124+0100 INFO Mapping 128 to 1
+2025-01-29T10:13:46.426122+0100 INFO Mapping 255 to 2
+2025-01-29T10:13:46.430163+0100 INFO After mapping, values: [0 1 2]
+2025-01-29T10:13:46.432126+0100 INFO Row differences: (array([0, 1, 2], dtype=int32), array([239561,   2913,   1068]))
+2025-01-29T10:13:46.434169+0100 INFO Column differences: (array([0, 1, 2], dtype=int32), array([239439,   2963,   1140]))
+2025-01-29T10:13:46.435171+0100 INFO Count of row differences: 3981
+2025-01-29T10:13:46.436126+0100 INFO Count of column differences: 4103
+2025-01-29T10:14:04.587452+0100 INFO Original image values: [  0 128 255]
+2025-01-29T10:14:04.591977+0100 INFO Unique values: [  0 128 255]
+2025-01-29T10:14:04.591977+0100 INFO Mapping 0 to 0
+2025-01-29T10:14:04.592564+0100 INFO Mapping 128 to 1
+2025-01-29T10:14:04.592564+0100 INFO Mapping 255 to 2
+2025-01-29T10:14:04.597869+0100 INFO After mapping, values: [0 1 2]
+2025-01-29T10:14:04.600768+0100 INFO Row differences: (array([0, 1, 2], dtype=int32), array([239561,   2913,   1068]))
+2025-01-29T10:14:04.603272+0100 INFO Column differences: (array([0, 1, 2], dtype=int32), array([239439,   2963,   1140]))
+2025-01-29T10:14:04.603836+0100 INFO Count of row differences: 3981
+2025-01-29T10:14:04.604858+0100 INFO Count of column differences: 4103
+2025-01-29T10:14:04.604858+0100 INFO Total length of segmentation boundary: 8084
+2025-01-29T10:14:13.780695+0100 INFO Original image values: [  0 128 255]
+2025-01-29T10:14:13.784696+0100 INFO Unique values: [  0 128 255]
+2025-01-29T10:14:13.784696+0100 INFO Mapping 0 to 0
+2025-01-29T10:14:13.784696+0100 INFO Mapping 128 to 1
+2025-01-29T10:14:13.785696+0100 INFO Mapping 255 to 2
+2025-01-29T10:14:13.789694+0100 INFO After mapping, values: [0 1 2]
+2025-01-29T10:14:13.791695+0100 INFO Row differences: (array([0, 1, 2], dtype=int32), array([239561,   2913,   1068]))
+2025-01-29T10:14:13.793697+0100 INFO Column differences: (array([0, 1, 2], dtype=int32), array([239439,   2963,   1140]))
+2025-01-29T10:14:13.794697+0100 INFO Count of row differences: 3981
+2025-01-29T10:14:13.794697+0100 INFO Count of column differences: 4103
+2025-01-29T10:14:13.795697+0100 INFO Total length of segmentation boundary: 8084
