@@ -1,0 +1,4 @@
+radius_mean_varying: 46.55
+number_fibers: 2403
+fiber_radius_mean: 6.13
+display_name: pbn

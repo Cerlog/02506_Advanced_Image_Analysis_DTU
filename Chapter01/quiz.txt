@@ -1,0 +1,4 @@
+image_convolution: 42
+length_of_boundary: 10801
+length_of_curve: 79.93
+display_name: pbn
