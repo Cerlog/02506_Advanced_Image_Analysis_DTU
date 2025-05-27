@@ -1,0 +1,4 @@
+keypoint_number: 375
+scale: 0.36
+translation_length: 539.72
+display_name: pbn

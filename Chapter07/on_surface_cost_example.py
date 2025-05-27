@@ -8,7 +8,8 @@ np.bool = bool
 np.int = int
 
 #%% input
-I = skimage.io.imread('../../data/week7/layers_A.png').astype(np.int32)
+#I = skimage.io.imread('layers_A.png').astype(np.int32)
+I = skimage.io.imread('rammed-earth-layers-limestone.jpg').astype(np.int32)
 
 fig, ax = plt.subplots(1,4)
 ax[0].imshow(I, cmap='gray')
@@ -49,8 +50,7 @@ ax[2].imshow(I, cmap='gray')
 ax[2].plot(segmentation_line, 'r')
 ax[2].set_title(f'delta = {delta}')
 
-
-#%% tow lines
+#python #%% tow lines
 layers = [slgbuilder.GraphObject(I), slgbuilder.GraphObject(I)]
 delta = 3
 
@@ -58,7 +58,7 @@ helper = slgbuilder.MaxflowBuilder()
 helper.add_objects(layers)
 helper.add_layered_boundary_cost()
 helper.add_layered_smoothness(delta=delta, wrap=False)  
-helper.add_layered_containment(layers[0], layers[1], min_margin=15)
+helper.add_layered_containment(layers[0], layers[1], min_margin=2)
 
 helper.solve()
 segmentations = [helper.what_segments(l).astype(np.int32) for l in layers]

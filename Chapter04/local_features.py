@@ -9,55 +9,107 @@ Anders Bjorholm Dahl (abda@dtu.dk)
 import numpy as np
 import scipy.ndimage
 
+
+######################################################################################
+######################################################################################
+#                       GAUSSIAN DERIVATIVE FEATURES
+######################################################################################
+######################################################################################
 def get_gauss_feat_im(im, sigma=1, normalize=True):
-    """Gauss derivative feaures for every image pixel.
+    """Gauss derivative features for every image pixel.
+    
+    This function applies Gaussian filters with different derivative orders
+    to extract a multi-dimensional feature representation at each pixel
+    of a 2D image. The derivatives capture various image properties such as
+    edges, corners, and texture gradients.
+    It generates 15 different feature channels by applying Gaussian derivatives
+    of orders 0 to 4 in both x and y directions.
+    
     Arguments:
-        image: a 2D image, shape (r, c).
-        sigma: standard deviation for Gaussian derivatives.
-        normalize: flag indicating normalization of features.
+        im: a 2D image, shape (r, c).
+        sigma: standard deviation for the Gaussian filter defining the scale.
+        normalize: flag to indicate if the resulting features should be
+                   normalized to have zero-mean and unit variance.
     Returns:
-        imfeat: 3D array of size (r, c, 15) with a 15-dimentional feature
-             vector for every pixel in the image.
+        imfeat: 3D array of size (r, c, 15) where each pixel is represented by a 
+                15-dimensional feature vector computed from different orders of 
+                Gaussian derivatives.
     Author: vand@dtu.dk, 2022
     """
+    # Define the list of derivative orders to compute.
+    # Orders include the 0th derivative (smoothed image) and higher order derivatives.
+    im = im.astype(float)
     orders = [0, 
-        [0, 1], [1, 0], 
-        [0, 2], [1, 1], [2, 0], 
-        [0, 3], [1, 2], [2, 1], [3, 0],
-        [0, 4], [1, 3], [2, 2], [3, 1], [4, 0]]
-
+              [0, 1], [1, 0], 
+              [0, 2], [1, 1], [2, 0], 
+              [0, 3], [1, 2], [2, 1], [3, 0],
+              [0, 4], [1, 3], [2, 2], [3, 1], [4, 0]]
+    
+    # Apply the Gaussian filter with each derivative order.
+    # For each order in the list, the function scipy.ndimage.gaussian_filter computes
+    # the Gaussian derivative response of the image.
     imfeat = [scipy.ndimage.gaussian_filter(im, sigma, o) for o in orders]    
+    
+    # Stack the individual feature images along the third dimension.
+    # The resulting array has shape (r, c, 15) corresponding to the 15 derivative responses.
     imfeat = np.stack(imfeat, axis=2)
    
     if normalize:
+        # Subtract the mean of each feature (across all pixels) to center the feature values around zero.
         imfeat -= np.mean(imfeat, axis=(0, 1))
-        std =  np.std(imfeat, axis=(0, 1))
-        std[std==0] = 1
+        # Calculate the standard deviation for each feature.
+        std = np.std(imfeat, axis=(0, 1))
+        # Avoid division by zero by setting any zero standard deviation to one.
+        std[std == 0] = 1
+        # Normalize the features so that each has unit variance.
         imfeat /= std
     
     return imfeat
 
-def get_gauss_feat_multi(im, sigmas=[1, 2, 4], normalize = True):
-    '''Multi-scale Gauss derivative feaures for every image pixel.
+def get_gauss_feat_multi(im, sigmas=[1, 2, 4], normalize=True):
+    '''Multi-scale Gauss derivative features for every image pixel.
+    
+    This function computes Gaussian derivative features over multiple scales.
+    For each sigma in the list, it extracts 15 feature channels using the 
+    get_gauss_feat_im function, reshapes them into a 2D array, and then 
+    aggregates them into a single 3D array with dimensions corresponding to 
+    the number of pixels, number of scales, and 15 derivative features.
+    
     Arguments:
-        image: a 2D image, shape (r, c).
-        sigma: list of standard deviations for Gaussian derivatives.
-        normalize: flag indicating normalization of features.
+        im: a 2D image, shape (r, c).
+        sigmas: list of standard deviations for Gaussian derivatives.
+        normalize: flag indicating if each feature should be normalized.
+    
     Returns:
-        imfeat: a a 3D array of size (r*c, n_scale, 15) with n_scale features in 
-            each pixels, and n_scale is length of sigma. Each pixel contains a 
-            feature vector and feature image is size (r, c, 15*n_scale).
+        imfeats: a 3D array of size (num_pixels, n_scale, 15). Each row 
+                corresponds to a pixel's feature vector computed at each scale.
+    
     Author: abda@dtu.dk, 2021
-
     '''
-    imfeats = []
+    imfeats = []  # Initialize a list to store features for each scale
+
     for s in sigmas:
+        # Compute the Gaussian derivative features for the current sigma
         feat = get_gauss_feat_im(im, s, normalize)
+        # Reshape each feature image from shape (r, c, 15) into (num_pixels, 15)
         imfeats.append(feat.reshape(-1, feat.shape[2]))
     
-    imfeats = np.asarray(imfeats).transpose(1,0,2)
+    # Convert the list of feature arrays to a NumPy array.
+    # The shape is initially (n_scale, num_pixels, 15) and we are transposing it
+    # to have the shape (num_pixels, n_scale, 15) fo
+    
+    # Return the multi-scale feature representation.
+    #return imfeatsr  #easier pixel-wise processing.
+    imfeats = np.asarray(imfeats).transpose(1, 0, 2)
     return imfeats
 
+
+
+######################################################################################
+######################################################################################
+#                       PATCH-BASED FEATURES
+######################################################################################
+######################################################################################
 
 def im2col(im, patch_size=[3, 3], stepsize=1):
     """Rearrange image patches into columns
@@ -84,17 +136,46 @@ def im2col(im, patch_size=[3, 3], stepsize=1):
 
 
 def ndim2col(im, block_size=[3, 3], stepsize=1):
-    """Rearrange image blocks into columns for N-D image (e.g. RGB image)"""""
-    if(im.ndim == 2):
+    """Rearrange image blocks into columns for N-D image (e.g. RGB image)
+
+    This function converts an image into column vectors of its blocks (patches). For a
+    grayscale (2D) image, it directly calls im2col. For a multi-channel (e.g. RGB)
+    image, it processes each channel separately and concatenates the patches vertically.
+
+    Arguments:
+        im: Input image, which can be either a 2D grayscale image or a 3D multi-channel image.
+        block_size: The size of each block (patch) to extract, given as [height, width].
+        stepsize: The number of pixels to step when sliding the block across the image.
+
+    Returns:
+        patches: A 2D array where each column is a flattened block from the image. For multi-channel images,
+                 the patches from each channel are concatenated in order.
+    """
+    # If the image is 2D (grayscale), use the existing im2col function.
+    if im.ndim == 2:
         return im2col(im, block_size, stepsize)
     else:
+        # For a multi-channel image assume shape is (rows, columns, channels)
         r, c, l = im.shape
-        patches = np.zeros((l * block_size[0] * block_size[1],
-                            (r - block_size[0] + 1) * (c - block_size[1] + 1)))
+
+        # Calculate the number of patches per channel.
+        num_patches = (r - block_size[0] + 1) * (c - block_size[1] + 1)
+        # Each patch is flattened into a vector with 'patch_elements' elements.
+        patch_elements = block_size[0] * block_size[1]
+
+        # Initialize an array to hold the concatenated patches from all channels.
+        # The output shape is (l * patch_elements) rows by (num_patches) columns.
+        patches = np.zeros((l * patch_elements, num_patches))
+
+        # Iterate over each channel
         for i in range(l):
-            p = block_size[0] * block_size[1]
-            patches[i * p : (i + 1) * p, :] = im2col(
-                im[:, :, i], block_size, stepsize)
+            # Determine the row indices in the output array corresponding to the current channel.
+            start = i * patch_elements
+            end = (i + 1) * patch_elements
+
+            # Extract patches from the i-th channel using im2col
+            # These patches are arranged in a 2D array where each column is a flattened block.
+            patches[start:end, :] = im2col(im[:, :, i], block_size, stepsize)
         return patches
 
 #%%
@@ -104,7 +185,9 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
     
     #%% features based on gaussian derivatives
-    filename = '../../data/week3/3labels/training_image.png'
+    import skimage.io
+    import matplotlib.pyplot as plt
+    filename = '3labels/training_image.png'
     I = skimage.io.imread(filename).astype(float)/255
     I = I[200:400, 200:400] # smaller image such that we can see 
     fig, ax = plt.subplots()

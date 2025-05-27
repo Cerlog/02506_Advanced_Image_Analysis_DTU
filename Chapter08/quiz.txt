@@ -1,0 +1,4 @@
+class_probability: 0.69
+loss_value: 1.17
+partial_derivative: 1.38
+display_name: pbn
